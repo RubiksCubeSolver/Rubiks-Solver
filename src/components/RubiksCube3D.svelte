@@ -1,16 +1,41 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import * as THREE from 'three';
   import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
   import { createSolvedCube, FACES, COLORS } from '../models/cubeModel';
   import { cubeColors, applyColorsToCSS } from '../config/cubeColors';
+  import ColorPalette from './ColorPalette.svelte';
   
   export let cube = createSolvedCube();
+  
+  const dispatch = createEventDispatcher();
   
   let container;
   let camera, scene, renderer, controls;
   let cubeGroup;
   let isInitialized = false;
+  let raycaster = new THREE.Raycaster();
+  let mouse = new THREE.Vector2();
+  let selectedColor = { name: 'white', value: cubeColors.white };
+  let isDragging = false;
+  let mouseDownTime = 0;
+  
+  const faceIndicesMap = {
+    0: FACES.RIGHT,
+    1: FACES.LEFT,
+    2: FACES.TOP,
+    3: FACES.BOTTOM,
+    4: FACES.FRONT,
+    5: FACES.BACK
+  };
+  
+  function scrambleCube() {
+    dispatch('scramble');
+  }
+  
+  function resetCube() {
+    dispatch('reset');
+  }
   
   onMount(() => {
     applyColorsToCSS();
@@ -80,6 +105,14 @@
     
     createCubeGroup();
     
+    container.addEventListener('mousedown', onMouseDown);
+    container.addEventListener('mouseup', onMouseUp);
+    container.addEventListener('mousemove', onMouseMove);
+    
+    container.addEventListener('touchstart', onTouchStart);
+    container.addEventListener('touchend', onTouchEnd);
+    container.addEventListener('touchmove', onTouchMove);
+    
     window.addEventListener('resize', onWindowResize);
     
     animate();
@@ -139,12 +172,124 @@
           cubieMesh.position.y = (y - 1) * (cubeSize + spacing);
           cubieMesh.position.z = (z - 1) * (cubeSize + spacing);
           
+          cubieMesh.userData = { x, y, z };
+          
           cubeGroup.add(cubieMesh);
         }
       }
     }
     
     scene.add(cubeGroup);
+  }
+  
+  function onMouseDown(event) {
+    mouseDownTime = Date.now();
+    isDragging = false;
+  }
+  
+  function onMouseMove() {
+    isDragging = true;
+  }
+  
+  function onMouseUp(event) {
+    if (isDragging || Date.now() - mouseDownTime > 200) return;
+    
+    const rect = container.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
+    
+    checkIntersection();
+  }
+  
+  function onTouchStart(event) {
+    mouseDownTime = Date.now();
+    isDragging = false;
+  }
+  
+  function onTouchMove() {
+    isDragging = true;
+  }
+  
+  function onTouchEnd(event) {
+    if (isDragging || Date.now() - mouseDownTime > 200) return;
+    
+    const touch = event.changedTouches[0];
+    const rect = container.getBoundingClientRect();
+    mouse.x = ((touch.clientX - rect.left) / container.clientWidth) * 2 - 1;
+    mouse.y = -((touch.clientY - rect.top) / container.clientHeight) * 2 + 1;
+    
+    checkIntersection();
+  }
+  
+  function checkIntersection() {
+    if (!camera || !scene) return;
+    
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(cubeGroup.children);
+    
+    if (intersects.length > 0) {
+      const intersection = intersects[0];
+      const cubieObject = intersection.object;
+      const faceIndex = intersection.faceIndex;
+      const { x, y, z } = cubieObject.userData;
+      
+      const hitFaceIndex = Math.floor(faceIndex / 2);
+      
+      let targetFace;
+      let squareIndex;
+      
+      switch(hitFaceIndex) {
+        case 0:
+          if (x === 2) {
+            targetFace = FACES.RIGHT;
+            squareIndex = y * 3 + (2 - z);
+          }
+          break;
+        case 1:
+          if (x === 0) {
+            targetFace = FACES.LEFT;
+            squareIndex = y * 3 + z;
+          }
+          break;
+        case 2:
+          if (y === 2) {
+            targetFace = FACES.TOP;
+            squareIndex = z * 3 + x;
+          }
+          break;
+        case 3:
+          if (y === 0) {
+            targetFace = FACES.BOTTOM;
+            squareIndex = (2-z) * 3 + x;
+          }
+          break;
+        case 4:
+          if (z === 2) {
+            targetFace = FACES.FRONT;
+            squareIndex = y * 3 + (2 - x);
+          }
+          break;
+        case 5:
+          if (z === 0) {
+            targetFace = FACES.BACK;
+            squareIndex = y * 3 + x;
+          }
+          break;
+      }
+      
+      if (targetFace !== undefined && squareIndex !== undefined) {
+        updateCubeFaceColor(targetFace, squareIndex, selectedColor.name);
+      }
+    }
+  }
+  
+  function updateCubeFaceColor(faceIndex, squareIndex, colorName) {
+    cube[faceIndex][squareIndex] = colorName;
+    createCubeGroup();
+  }
+  
+  function handleColorSelected(event) {
+    selectedColor = event.detail;
   }
   
   function onWindowResize() {
@@ -186,41 +331,70 @@
   onDestroy(() => {
     if (renderer) {
       window.removeEventListener('resize', onWindowResize);
+      container?.removeEventListener('mousedown', onMouseDown);
+      container?.removeEventListener('mouseup', onMouseUp);
+      container?.removeEventListener('mousemove', onMouseMove);
+      container?.removeEventListener('touchstart', onTouchStart);
+      container?.removeEventListener('touchend', onTouchEnd);
+      container?.removeEventListener('touchmove', onTouchMove);
       renderer.dispose();
       if (controls) controls.dispose();
     }
   });
 </script>
 
-<div class="cube-container-wrapper">
-  <div class="cube-3d-container" bind:this={container}>
+<div class="cube-3d-layout">
+  <div class="cube-side">
+    <div class="cube-3d-container" bind:this={container}></div>
+    
+    <div class="controls-info">
+      <div class="info-text">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path fill="currentColor" d="M12,6V9L16,5L12,1V4A8,8 0 0,0 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13 6,12A6,6 0 0,1 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,11 18,12A6,6 0 0,1 12,18V15L8,19L12,23V20A8,8 0 0,0 20,12C20,10.43 19.54,8.97 18.76,7.74Z"/>
+        </svg>
+        <span>Drag to rotate, scroll to zoom, click to color</span>
+      </div>
+    </div>
   </div>
   
-  <div class="controls-info">
-    <div class="info-text">
-      <svg viewBox="0 0 24 24" width="24" height="24">
-        <path fill="currentColor" d="M12,6V9L16,5L12,1V4A8,8 0 0,0 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13 6,12A6,6 0 0,1 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,11 18,12A6,6 0 0,1 12,18V15L8,19L12,23V20A8,8 0 0,0 20,12C20,10.43 19.54,8.97 18.76,7.74Z"/>
-      </svg>
-      <span>Drag to rotate, scroll to zoom</span>
+  <div class="palette-side">
+    <ColorPalette on:colorSelected={handleColorSelected} />
+    
+    <div class="cube-controls">
+      <button on:click={scrambleCube}>Scramble</button>
+      <button on:click={resetCube}>Reset</button>
     </div>
   </div>
 </div>
 
 <style>
-  .cube-container-wrapper {
+  .cube-3d-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    width: 80%;
+    max-width: 900px;
+    margin: 20px auto;
+  }
+  
+  .cube-side {
+    flex: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 30px auto;
-    width: 60%;
-    max-width: 600px;
   }
-
+  
+  .palette-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+  }
+  
   .cube-3d-container {
     width: 100%;
     aspect-ratio: 1 / 1;
-    margin: 0 auto;
     border-radius: 20px;
     background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
     box-shadow: 
@@ -252,15 +426,64 @@
     height: 20px;
   }
   
-  @media (max-width: 1200px) {
-    .cube-container-wrapper {
-      width: 70%;
+  .cube-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .cube-controls button {
+    background-color: var(--color-black);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+  
+  .cube-controls button:hover {
+    background-color: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cube-controls button:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 900px) {
+    .cube-3d-layout {
+      flex-direction: column;
+      width: 95%;
+    }
+    
+    .cube-side, .palette-side {
+      width: 100%;
+    }
+    
+    .palette-side {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    
+    .cube-controls {
+      flex-direction: row;
+      margin-top: 0;
     }
   }
   
-  @media (max-width: 768px) {
-    .cube-container-wrapper {
-      width: 80%;
+  @media (max-width: 600px) {
+    .palette-side {
+      flex-direction: column;
+    }
+    
+    .cube-controls {
+      flex-direction: row;
+      margin-top: 20px;
     }
     
     .info-text {
@@ -271,22 +494,6 @@
     .info-text svg {
       width: 18px;
       height: 18px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .cube-container-wrapper {
-      width: 90%;
-    }
-    
-    .info-text {
-      font-size: 11px;
-      padding: 4px 8px;
-    }
-    
-    .info-text svg {
-      width: 16px;
-      height: 16px;
     }
   }
 </style> 

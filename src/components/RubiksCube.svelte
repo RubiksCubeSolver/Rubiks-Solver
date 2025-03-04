@@ -1,63 +1,55 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import { createSolvedCube, FACES, COLORS } from '../models/cubeModel';
   import CubeFace from './CubeFace.svelte';
   
   export let cube = createSolvedCube();
+  export let hideButtons = false;
   
-  const faceNames = ['Top', 'Bottom', 'Left', 'Right', 'Front', 'Back'];
+  const dispatch = createEventDispatcher();
+  
+  const faceNames = {
+    [FACES.TOP]: "Top",
+    [FACES.BOTTOM]: "Bottom",
+    [FACES.LEFT]: "Left",
+    [FACES.RIGHT]: "Right",
+    [FACES.FRONT]: "Front",
+    [FACES.BACK]: "Back"
+  };
 
   function scrambleCube() {
-    let scrambledCube = JSON.parse(JSON.stringify(cube));
-    
-    for (let face = 0; face < 6; face++) {
-      let indices = [...Array(9).keys()];
-      
-      for (let i = indices.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [indices[i], indices[j]] = [indices[j], indices[i]];
-      }
-      
-      const originalFace = [...scrambledCube[face]];
-      for (let i = 0; i < 9; i++) {
-        scrambledCube[face][i] = originalFace[indices[i]];
-      }
-    }
-    
-    cube = scrambledCube;
+    dispatch('scramble');
   }
   
   function resetCube() {
-    cube = createSolvedCube();
+    dispatch('reset');
   }
 </script>
 
-<div class="rubiks-cube-container">
-  <div class="cube-layout">
-    <div class="cube-row empty-cell"></div>
-    <div class="cube-row top-face">
-      <CubeFace face={cube[FACES.TOP]} faceName={faceNames[FACES.TOP]} />
-    </div>
-    <div class="cube-row empty-cell"></div>
+<div class="cube-container">
+  <div class="cube-grid">
+    <div class="face-spacer"></div>
+    <CubeFace face={cube[FACES.TOP]} faceName={faceNames[FACES.TOP]} />
+    <div class="face-spacer"></div>
+    <div class="face-spacer"></div>
     
-    <div class="cube-row middle-faces">
-      <CubeFace face={cube[FACES.LEFT]} faceName={faceNames[FACES.LEFT]} />
-      <CubeFace face={cube[FACES.FRONT]} faceName={faceNames[FACES.FRONT]} />
-      <CubeFace face={cube[FACES.RIGHT]} faceName={faceNames[FACES.RIGHT]} />
-      <CubeFace face={cube[FACES.BACK]} faceName={faceNames[FACES.BACK]} />
-    </div>
+    <CubeFace face={cube[FACES.LEFT]} faceName={faceNames[FACES.LEFT]} />
+    <CubeFace face={cube[FACES.FRONT]} faceName={faceNames[FACES.FRONT]} />
+    <CubeFace face={cube[FACES.RIGHT]} faceName={faceNames[FACES.RIGHT]} />
+    <CubeFace face={cube[FACES.BACK]} faceName={faceNames[FACES.BACK]} />
     
-    <div class="cube-row empty-cell"></div>
-    <div class="cube-row bottom-face">
-      <CubeFace face={cube[FACES.BOTTOM]} faceName={faceNames[FACES.BOTTOM]} />
-    </div>
-    <div class="cube-row empty-cell"></div>
+    <div class="face-spacer"></div>
+    <CubeFace face={cube[FACES.BOTTOM]} faceName={faceNames[FACES.BOTTOM]} />
+    <div class="face-spacer"></div>
+    <div class="face-spacer"></div>
   </div>
   
-  <div class="controls">
-    <button on:click={scrambleCube}>Scramble</button>
-    <button on:click={resetCube}>Reset</button>
-  </div>
+  {#if !hideButtons}
+    <div class="controls">
+      <button on:click={scrambleCube}>Scramble</button>
+      <button on:click={resetCube}>Reset</button>
+    </div>
+  {/if}
   
   <div class="legend">
     <h3>Color Legend</h3>
@@ -73,55 +65,44 @@
 </div>
 
 <style>
-  .rubiks-cube-container {
+  .cube-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
-    max-width: 100%;
-    overflow-x: auto;
+    margin: 20px auto;
+    max-width: 600px;
   }
   
-  .cube-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 2rem;
+  .cube-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
   }
   
-  .cube-row {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .middle-faces {
-    display: flex;
-    flex-wrap: nowrap;
+  .face-spacer {
+    visibility: hidden;
   }
   
   .controls {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 10px;
+    margin-top: 20px;
   }
   
   button {
-    cursor: pointer;
-    border: none;
-    background: var(--color-black);
+    background-color: var(--color-black);
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.2s;
   }
-
+  
   button:hover {
     background-color: #555;
-  }
-
-  button:active {
-    transform: translateY(1px);
   }
   
   .legend {
@@ -157,11 +138,6 @@
   }
   
   @media (max-width: 768px) {
-    .middle-faces {
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
     .legend-items {
       grid-template-columns: repeat(2, 1fr);
     }

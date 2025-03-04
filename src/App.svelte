@@ -34,29 +34,35 @@
 </script>
 
 <main>
-  <h1>Rubik's Cube Solver</h1>
+  <h1>Rubik's Cube</h1>
   
   <div class="view-toggle">
-    <button class:active={activeView === '3d'} on:click={() => activeView = '3d'}>
-      3D View
-    </button>
-    <button class:active={activeView === '2d'} on:click={() => activeView = '2d'}>
-      2D View
-    </button>
+    <button class:active={activeView === '3d'} on:click={() => activeView = '3d'}>3D View</button>
+    <button class:active={activeView === '2d'} on:click={() => activeView = '2d'}>2D View</button>
   </div>
   
-  <div class="cube-container">
-    {#if activeView === '3d'}
-      <RubiksCube3D bind:cube={cube} />
-    {:else}
-      <RubiksCube bind:cube={cube} />
-    {/if}
-  </div>
+  <!-- Only show buttons for 2D view - 3D view has its own buttons -->
+  {#if activeView === '2d'}
+    <div class="controls">
+      <button on:click={scrambleCube}>Scramble</button>
+      <button on:click={resetCube}>Reset</button>
+    </div>
+  {/if}
   
-  <div class="controls">
-    <button on:click={scrambleCube}>Scramble</button>
-    <button on:click={resetCube}>Reset</button>
-  </div>
+  {#if activeView === '3d'}
+    <RubiksCube3D 
+      bind:cube={cube} 
+      on:scramble={scrambleCube} 
+      on:reset={resetCube} 
+    />
+  {:else}
+    <RubiksCube 
+      bind:cube={cube} 
+      on:scramble={scrambleCube} 
+      on:reset={resetCube} 
+      hideButtons={true} 
+    />
+  {/if}
 </main>
 
 <style>
@@ -127,13 +133,6 @@
   
   .view-toggle button:hover:not(.active) {
     background: #d0d0d0;
-  }
-  
-  .cube-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
   }
   
   .controls {
