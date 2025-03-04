@@ -5,6 +5,7 @@
   import { createSolvedCube, FACES, COLORS } from '../models/cubeModel';
   import { cubeColors, applyColorsToCSS } from '../config/cubeColors';
   import ColorPalette from './ColorPalette.svelte';
+  import RotationControls from './RotationControls.svelte';
   
   export let cube = createSolvedCube();
   
@@ -355,6 +356,8 @@
       <button on:click={scrambleCube}>Scramble</button>
       <button on:click={resetCube}>Reset</button>
     </div>
+    
+    <RotationControls />
   </div>
 </div>
 
