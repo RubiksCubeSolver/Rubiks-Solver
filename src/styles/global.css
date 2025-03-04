@@ -1,0 +1,23 @@
+:root {
+  --color-white: #ffffff;
+  --color-yellow: #FFFF00;
+  --color-red: #FF0000;
+  --color-orange: #FF8000;
+  --color-blue: #4800ff;
+  --color-green: #00FF00;
+  --color-black: #333333;
+  --color-border: #222222;
+  --cube-size: 200px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+* {
+  box-sizing: border-box;
+} 
