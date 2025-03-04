@@ -44,16 +44,16 @@
   .color-palette {
     width: 100%;
     margin-bottom: 20px;
-    padding: 15px;
-    background: white;
+    padding: 20px;
+    background: var(--color-bg-secondary);
     border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }
   
   .palette-title {
     font-size: 14px;
-    margin-bottom: 10px;
-    color: #666;
+    margin-bottom: 15px;
+    color: var(--color-text-secondary);
     text-align: center;
   }
   
@@ -61,7 +61,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
   }
   
   .color-swatch {
@@ -70,27 +70,28 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 2px solid #ddd;
+    border: 2px solid var(--color-border);
     padding: 0;
     appearance: none;
   }
   
   .color-swatch:hover {
     transform: scale(1.1);
-    border-color: #999;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 10px var(--color-accent-glow);
   }
   
   .color-swatch:focus-visible {
-    outline: 3px solid #666;
-    border-color: #666;
+    outline: 3px solid var(--color-accent);
+    border-color: var(--color-accent);
     transform: scale(1.1);
+    box-shadow: 0 0 15px var(--color-accent-glow);
   }
   
   .color-swatch.selected {
-    border: 3px solid #333;
+    border: 3px solid var(--color-accent);
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 15px var(--color-accent-glow);
   }
   
   @media (max-width: 768px) {

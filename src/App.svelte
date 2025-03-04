@@ -67,23 +67,40 @@
 
 <style>
   :global(:root) {
-    --color-white: #800f80;
-    --color-yellow: #FFFF00;
-    --color-red: #FF0000;
-    --color-orange: #FF8000;
-    --color-blue: #2c2c2c;
-    --color-green: #00FF00;
-    --color-black: #333333;
-    --color-border: #222222;
+    /* Dark Theme Color Palette */
+    --color-bg-primary: #1a1a1a;
+    --color-bg-secondary: #2a2a2a;
+    --color-bg-tertiary: #333333;
+    --color-text-primary: #f0f0f0;
+    --color-text-secondary: #bbbbbb;
+    --color-accent: #ff3a3a;
+    --color-accent-glow: rgba(255, 58, 58, 0.4);
+    --color-highlight: #ff5252;
+    
+    /* Cube Colors */
+    --color-white: #f0f0f0;
+    --color-yellow: #ffeb3b;
+    --color-red: #ff3a3a;
+    --color-orange: #ff9800;
+    --color-blue: #2196f3;
+    --color-green: #4caf50;
+    --color-black: #181818;
+    --color-border: #444444;
     --cube-size: 200px;
+    
+    /* Glow Effects */
+    --glow-sm: 0 0 5px var(--color-accent-glow);
+    --glow-md: 0 0 10px var(--color-accent-glow);
+    --glow-lg: 0 0 20px var(--color-accent-glow);
   }
   
   :global(body) {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    transition: background-color 0.3s, color 0.3s;
   }
   
   :global(*) {
@@ -101,10 +118,12 @@
   }
 
   h1 {
-    color: #444;
+    color: var(--color-text-primary);
     margin-bottom: 1.5rem;
     font-size: 2.5rem;
     text-align: center;
+    text-shadow: var(--glow-sm);
+    letter-spacing: 1px;
   }
   
   .view-toggle {
@@ -116,23 +135,24 @@
   .view-toggle button {
     cursor: pointer;
     border: none;
-    background: #e0e0e0;
-    color: #444;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
     padding: 0.5rem 1.5rem;
     border-radius: 2rem;
     font-weight: bold;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
   
   .view-toggle button.active {
-    background: var(--color-black);
-    color: white;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+    box-shadow: 0 0 15px var(--color-accent-glow);
   }
   
   .view-toggle button:hover:not(.active) {
-    background: #d0d0d0;
+    background: var(--color-bg-secondary);
+    box-shadow: 0 0 10px rgba(255, 58, 58, 0.2);
   }
   
   .controls {
@@ -143,16 +163,19 @@
   .controls button {
     cursor: pointer;
     border: none;
-    background: var(--color-black);
-    color: white;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     font-weight: bold;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
   }
   
   .controls button:hover {
-    background-color: #555;
+    background-color: var(--color-accent);
+    box-shadow: var(--glow-sm);
+    transform: translateY(-2px);
   }
   
   .controls button:active {

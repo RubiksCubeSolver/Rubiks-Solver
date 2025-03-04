@@ -45,7 +45,7 @@
     if (!container) return;
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf5f5f5);
+    scene.background = new THREE.Color(0x121212);
     
     camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
     camera.position.set(4.5, 5.5, 5);
@@ -346,15 +346,6 @@
 <div class="cube-3d-layout">
   <div class="cube-side">
     <div class="cube-3d-container" bind:this={container}></div>
-    
-    <div class="controls-info">
-      <div class="info-text">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path fill="currentColor" d="M12,6V9L16,5L12,1V4A8,8 0 0,0 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13 6,12A6,6 0 0,1 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,11 18,12A6,6 0 0,1 12,18V15L8,19L12,23V20A8,8 0 0,0 20,12C20,10.43 19.54,8.97 18.76,7.74Z"/>
-        </svg>
-        <span>Drag to rotate, scroll to zoom, click to color</span>
-      </div>
-    </div>
   </div>
   
   <div class="palette-side">
@@ -396,34 +387,11 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     border-radius: 20px;
-    background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
+    background: var(--color-bg-tertiary);
     box-shadow: 
-      8px 8px 16px rgba(0, 0, 0, 0.1),
-      -8px -8px 16px rgba(255, 255, 255, 0.8),
-      inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+      0 8px 16px rgba(0, 0, 0, 0.3),
+      0 0 20px var(--color-accent-glow);
     overflow: hidden;
-  }
-  
-  .controls-info {
-    margin-top: 15px;
-  }
-  
-  .info-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-size: 14px;
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 6px 12px;
-    border-radius: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .info-text svg {
-    margin-right: 8px;
-    width: 20px;
-    height: 20px;
   }
   
   .cube-controls {
@@ -434,9 +402,9 @@
   }
   
   .cube-controls button {
-    background-color: var(--color-black);
-    color: white;
-    border: none;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
     padding: 12px;
     border-radius: 8px;
     cursor: pointer;
@@ -445,9 +413,11 @@
   }
   
   .cube-controls button:hover {
-    background-color: #555;
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px var(--color-accent-glow);
   }
   
   .cube-controls button:active {
@@ -484,16 +454,6 @@
     .cube-controls {
       flex-direction: row;
       margin-top: 20px;
-    }
-    
-    .info-text {
-      font-size: 12px;
-      padding: 5px 10px;
-    }
-    
-    .info-text svg {
-      width: 18px;
-      height: 18px;
     }
   }
 </style> 
