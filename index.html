@@ -1,13 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rubik's Cube Solver</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Load libraries from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Load cubejs - we'll host this locally since it's not widely available on CDN -->
+    <script src="/js/cube.js"></script>
+    <script src="/js/solve.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Rubik's Cube Solver</h1>
+        </header>
+        
+        <div class="controls">
+            <div class="buttons">
+                <button id="reset-btn">Reset Cube</button>
+                <button id="scramble-btn">Scramble</button>
+                <button id="solve-btn">Solve</button>
+            </div>
+            
+            <div class="move-controls">
+                <h3>Basic Moves</h3>
+                <div class="move-buttons">
+                    <button data-move="U">U</button>
+                    <button data-move="U'">U'</button>
+                    <button data-move="R">R</button>
+                    <button data-move="R'">R'</button>
+                    <button data-move="F">F</button>
+                    <button data-move="F'">F'</button>
+                    <button data-move="D">D</button>
+                    <button data-move="D'">D'</button>
+                    <button data-move="L">L</button>
+                    <button data-move="L'">L'</button>
+                    <button data-move="B">B</button>
+                    <button data-move="B'">B'</button>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <h3>Manual Input</h3>
+                <p class="input-description">
+                    Enter the current state of your cube using the color notation: U=White, R=Red, F=Green, D=Yellow, L=Orange, B=Blue
+                </p>
+                <div class="cube-input-container">
+                    <div class="cube-input" id="cube-input">
+                        <!-- Will be filled by JavaScript -->
+                    </div>
+                    <div class="color-picker">
+                        <div class="color-button" data-color="U" style="background-color: #FFFFFF">U</div>
+                        <div class="color-button" data-color="R" style="background-color: #FF0000">R</div>
+                        <div class="color-button" data-color="F" style="background-color: #00FF00">F</div>
+                        <div class="color-button" data-color="D" style="background-color: #FFFF00">D</div>
+                        <div class="color-button" data-color="L" style="background-color: #FFA500">L</div>
+                        <div class="color-button" data-color="B" style="background-color: #0000FF; color: white">B</div>
+                    </div>
+                </div>
+                <div class="input-buttons">
+                    <button id="apply-input-btn">Apply State</button>
+                    <button id="reset-input-btn">Reset Input</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="solution-container" class="hidden">
+            <h3>Solution</h3>
+            <div id="solution-text"></div>
+            <button id="apply-solution-btn">Apply Solution</button>
+            <button id="copy-solution-btn">Copy to Clipboard</button>
+        </div>
+        
+        <div id="canvas-container">
+            <!-- Three.js cube visualization will be here -->
+        </div>
+    </div>
+    
+    <!-- Load application scripts -->
+    <script src="js/cubeRenderer.js"></script>
+    <script src="js/app.js"></script>
+</body>
 </html> 
