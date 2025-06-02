@@ -15,70 +15,72 @@
     <script src="/js/solve.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="app-container">
+        <header class="app-header">
             <h1>Rubik's Cube Solver</h1>
         </header>
         
-        <div class="controls">
-            <div class="buttons">
-                <button id="reset-btn">Reset Cube</button>
-                <button id="scramble-btn">Scramble</button>
-                <button id="solve-btn">Solve</button>
-            </div>
-            
-            <div class="move-controls">
-                <h3>Basic Moves</h3>
-                <div class="move-buttons">
-                    <button data-move="U">U</button>
-                    <button data-move="U'">U'</button>
-                    <button data-move="R">R</button>
-                    <button data-move="R'">R'</button>
-                    <button data-move="F">F</button>
-                    <button data-move="F'">F'</button>
-                    <button data-move="D">D</button>
-                    <button data-move="D'">D'</button>
-                    <button data-move="L">L</button>
-                    <button data-move="L'">L'</button>
-                    <button data-move="B">B</button>
-                    <button data-move="B'">B'</button>
-                </div>
-            </div>
-            
-            <div class="input-section">
-                <h3>Manual Input</h3>
-                <p class="input-description">
-                    Enter the current state of your cube using the color notation: U=White, R=Red, F=Green, D=Yellow, L=Orange, B=Blue
-                </p>
-                <div class="cube-input-container">
-                    <div class="cube-input" id="cube-input">
-                        <!-- Will be filled by JavaScript -->
+        <div class="app-content">
+            <aside class="sidebar">
+                <section class="control-section">
+                    <div class="action-buttons">
+                        <button id="reset-btn">Reset</button>
+                        <button id="scramble-btn">Scramble</button>
+                        <button id="solve-btn">Solve</button>
                     </div>
-                    <div class="color-picker">
-                        <div class="color-button" data-color="U" style="background-color: #FFFFFF">U</div>
-                        <div class="color-button" data-color="R" style="background-color: #FF0000">R</div>
-                        <div class="color-button" data-color="F" style="background-color: #00FF00">F</div>
-                        <div class="color-button" data-color="D" style="background-color: #FFFF00">D</div>
-                        <div class="color-button" data-color="L" style="background-color: #FFA500">L</div>
-                        <div class="color-button" data-color="B" style="background-color: #0000FF; color: white">B</div>
+                </section>
+                
+                <section class="control-section">
+                    <h3>Moves</h3>
+                    <div class="move-grid">
+                        <button data-move="U" class="move-btn">U</button>
+                        <button data-move="U'" class="move-btn">U'</button>
+                        <button data-move="R" class="move-btn">R</button>
+                        <button data-move="R'" class="move-btn">R'</button>
+                        <button data-move="F" class="move-btn">F</button>
+                        <button data-move="F'" class="move-btn">F'</button>
+                        <button data-move="D" class="move-btn">D</button>
+                        <button data-move="D'" class="move-btn">D'</button>
+                        <button data-move="L" class="move-btn">L</button>
+                        <button data-move="L'" class="move-btn">L'</button>
+                        <button data-move="B" class="move-btn">B</button>
+                        <button data-move="B'" class="move-btn">B'</button>
                     </div>
+                </section>
+                
+                <section class="control-section">
+                    <h3>Input State</h3>
+                    <div class="input-compact">
+                        <div class="cube-input-mini" id="cube-input"></div>
+                        <div class="color-picker-compact">
+                            <div class="color-button" data-color="U" style="background-color: #FFFFFF" title="White">W</div>
+                            <div class="color-button" data-color="R" style="background-color: #FF0000" title="Red">R</div>
+                            <div class="color-button" data-color="F" style="background-color: #00FF00" title="Green">G</div>
+                            <div class="color-button" data-color="D" style="background-color: #FFFF00" title="Yellow">Y</div>
+                            <div class="color-button" data-color="L" style="background-color: #FFA500" title="Orange">O</div>
+                            <div class="color-button" data-color="B" style="background-color: #0000FF; color: white" title="Blue">B</div>
+                        </div>
+                    </div>
+                    <div class="input-actions">
+                        <button id="apply-input-btn" class="compact-btn">Apply</button>
+                        <button id="reset-input-btn" class="compact-btn">Reset</button>
+                    </div>
+                </section>
+                
+                <section class="control-section" id="solution-section" style="display: none;">
+                    <h3>Solution</h3>
+                    <div id="solution-text" class="solution-display"></div>
+                    <div class="solution-actions">
+                        <button id="apply-solution-btn" class="compact-btn">Execute</button>
+                        <button id="copy-solution-btn" class="compact-btn">Copy</button>
+                    </div>
+                </section>
+            </aside>
+            
+            <main class="cube-area">
+                <div id="canvas-container">
                 </div>
-                <div class="input-buttons">
-                    <button id="apply-input-btn">Apply State</button>
-                    <button id="reset-input-btn">Reset Input</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="solution-container" class="hidden">
-            <h3>Solution</h3>
-            <div id="solution-text"></div>
-            <button id="apply-solution-btn">Apply Solution</button>
-            <button id="copy-solution-btn">Copy to Clipboard</button>
-        </div>
-        
-        <div id="canvas-container">
-            <!-- Three.js cube visualization will be here -->
+            </main>
         </div>
     </div>
     

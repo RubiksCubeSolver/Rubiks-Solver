@@ -38,11 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const resetBtn = document.getElementById('reset-btn');
         const scrambleBtn = document.getElementById('scramble-btn');
         const solveBtn = document.getElementById('solve-btn');
-        const solutionContainer = document.getElementById('solution-container');
+        const solutionSection = document.getElementById('solution-section');
         const solutionText = document.getElementById('solution-text');
         const applySolutionBtn = document.getElementById('apply-solution-btn');
         const copySolutionBtn = document.getElementById('copy-solution-btn');
-        const moveButtons = document.querySelectorAll('.move-buttons button');
+        const moveButtons = document.querySelectorAll('.move-btn');
         
         // Manual input elements
         const cubeInputContainer = document.getElementById('cube-input');
@@ -61,14 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.addEventListener('click', () => {
             cube.identity();
             renderer.updateCubeFromState(cube);
-            solutionContainer.classList.add('hidden');
+            solutionSection.style.display = 'none';
         });
         
         scrambleBtn.addEventListener('click', () => {
             const scramble = Cube.random().solve();
             cube.move(Cube.inverse(scramble));
             renderer.updateCubeFromState(cube);
-            solutionContainer.classList.add('hidden');
+            solutionSection.style.display = 'none';
             updateCubeInput(cube.asString());
         });
         
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            solutionContainer.classList.remove('hidden');
+            solutionSection.style.display = 'block';
         });
         
         applySolutionBtn.addEventListener('click', () => {
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 applyNextMove();
-                solutionContainer.classList.add('hidden');
+                solutionSection.style.display = 'none';
             }
         });
         
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cube.move(move);
                 renderer.updateCubeFromState(cube);
                 updateCubeInput(cube.asString());
-                solutionContainer.classList.add('hidden');
+                solutionSection.style.display = 'none';
             });
         });
         
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update renderer
                 renderer.updateCubeFromState(cube);
                 
-                solutionContainer.classList.add('hidden');
+                solutionSection.style.display = 'none';
             } catch (e) {
                 alert('Invalid cube state. Please check your input.');
                 console.error(e);
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cube.move(keyToMove[e.key]);
                 renderer.updateCubeFromState(cube);
                 updateCubeInput(cube.asString());
-                solutionContainer.classList.add('hidden');
+                solutionSection.style.display = 'none';
             }
         });
         
